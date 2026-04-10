@@ -12,8 +12,23 @@ spring:
     database-platform: org.hibernate.dialect.H2Dialect
     hibernate:
       ddl-auto: update
+    defer-datasource-initialization: true
 
   h2:
     console:
       enabled: true
       path: /h2-console
+
+  sql:
+    init:
+      mode: always
+
+
+brapi:
+  url: https://brapi.dev/api/
+  token: ${BRAPI_TOKEN}
+
+api:
+  security:
+    token:
+      secret: ${JWT_SECRET}
