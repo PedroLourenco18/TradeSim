@@ -19,8 +19,6 @@ import java.util.UUID;
 public class IDORFilter extends OncePerRequestFilter {
     private final PositionRepository positionRepository;
 
-    private final TransactionRepository transactionRepository;
-
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         String path = request.getRequestURI();

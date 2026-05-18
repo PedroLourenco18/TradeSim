@@ -1,6 +1,5 @@
 package br.com.pedrolourenco.TradeSim.security;
 
-import br.com.pedrolourenco.TradeSim.domain.user.User;
 import br.com.pedrolourenco.TradeSim.repository.UserRepository;
 import br.com.pedrolourenco.TradeSim.service.TokenService;
 import jakarta.servlet.FilterChain;
@@ -14,7 +13,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-import javax.security.sasl.AuthenticationException;
 import java.io.IOException;
 import java.util.UUID;
 

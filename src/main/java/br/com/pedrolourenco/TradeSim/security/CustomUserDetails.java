@@ -1,6 +1,5 @@
 package br.com.pedrolourenco.TradeSim.security;
 
-import br.com.pedrolourenco.TradeSim.domain.user.User;
 import lombok.*;
 import org.jspecify.annotations.Nullable;
 import org.springframework.security.core.GrantedAuthority;
