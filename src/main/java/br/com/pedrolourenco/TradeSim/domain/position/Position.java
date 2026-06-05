@@ -23,7 +23,7 @@ public class Position {
     private User user;
 
     @ManyToOne
-    @JoinColumn(name = "asset_id")
+    @JoinColumn(name = "stock_id")
     private Stock stock;
 
     private Long quantity;

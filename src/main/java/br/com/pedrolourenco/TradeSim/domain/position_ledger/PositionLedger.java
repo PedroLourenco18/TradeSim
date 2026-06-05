@@ -31,7 +31,7 @@ public class PositionLedger {
     private Transaction transaction;
 
     @ManyToOne
-    @JoinColumn(name = "asset_id")
+    @JoinColumn(name = "stock_id")
     private Stock stock;
 
     private Long quantity;
