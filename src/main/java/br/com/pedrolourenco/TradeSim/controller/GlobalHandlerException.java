@@ -75,4 +75,14 @@ public class GlobalHandlerException {
         );
         return ResponseEntity.badRequest().body(response);
     }
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<BasicResponse> handleException(Exception e){
+        BasicResponse response = new BasicResponse(
+                true,
+                "Houve um erro interno"
+        );
+
+        return ResponseEntity.status(500).body(response);
+    }
 }
