@@ -38,7 +38,7 @@ public class IdempotencyKeyInterceptor implements HandlerInterceptor {
         String key = request.getHeader(idempotencyKeyHeader);
 
         if(key == null || key.isEmpty()){
-            setResponse(response, 400, buildJsonResponseBody("O header '" + idempotencyKeyHeader + "' é obrigatório nesse enpoint"));
+            setResponse(response, 400, buildJsonResponseBody("O header '" + idempotencyKeyHeader + "' é obrigatório nesse endpoint"));
             return false;
         }
 

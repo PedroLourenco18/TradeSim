@@ -17,7 +17,7 @@ public class WebMvcConfig implements WebMvcConfigurer {
                 .addPathPatterns(
                         "/transactions/deposit",
                         "/transactions/withdraw",
-                        "/transactions/buy",
-                        "/transactions/sell");
+                        "/transactions/buy/**",
+                        "/transactions/sell/**");
     }
 }
