@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Entity
-@Table(name = "positions_ledger")
+@Table(name = "position_ledger")
 @EntityListeners(AuditingEntityListener.class)
 @Getter
 @Setter
@@ -36,6 +36,7 @@ public class PositionLedger {
 
     private Long quantity;
 
+    @Enumerated(EnumType.STRING)
     private PositionLedgerType type;
 
     @Column(name = "created_at")
