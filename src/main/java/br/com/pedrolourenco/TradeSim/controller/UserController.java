@@ -41,15 +41,12 @@ public class UserController {
     }
 
     @PostMapping
-    public ResponseEntity<DataResponse<UserOutputDTO>> save(@RequestBody @Valid RegisterUserInputDTO userInputDTO){
-        User savedUser = userService.register(userMapper.toEntity(userInputDTO));
+    public ResponseEntity<BasicResponse> save(@RequestBody @Valid RegisterUserInputDTO userInputDTO){
+        userService.register(userMapper.toEntity(userInputDTO));
 
-        UserOutputDTO userOutputDTO = userMapper.toDTO(savedUser);
-
-        DataResponse<UserOutputDTO> response = new DataResponse<>(
+        BasicResponse response = new BasicResponse(
                 false,
-                "Usuario criado com sucesso!",
-                userOutputDTO
+                "Usuario criado com sucesso!"
         );
 
         return ResponseEntity.status(HttpStatus.CREATED).body(response);

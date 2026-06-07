@@ -19,7 +19,7 @@ public class UserService {
 
     private final PasswordEncoder passwordEncoder;
 
-    public User register(User userInput){
+    public void register(User userInput){
         if(userRepository.existsByEmail(userInput.getEmail())){
             throw new ConflictDataException(
                     "O email '" + userInput.getEmail() + "' ja esta sendo usado");
@@ -39,7 +39,7 @@ public class UserService {
 
         userInput.setPassword(passwordEncoder.encode(userInput.getPassword()));
 
-        return userRepository.save(userInput);
+        userRepository.save(userInput);
     }
 
     public User findUser(UUID id){
