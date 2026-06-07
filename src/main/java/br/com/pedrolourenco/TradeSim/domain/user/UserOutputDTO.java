@@ -4,12 +4,9 @@ import lombok.Data;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.UUID;
 
 @Data
 public class UserOutputDTO {
-    private UUID id;
-
     private String name;
 
     private String nickname;
