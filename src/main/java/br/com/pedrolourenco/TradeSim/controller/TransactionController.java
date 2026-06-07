@@ -1,14 +1,11 @@
 package br.com.pedrolourenco.TradeSim.controller;
 
-import br.com.pedrolourenco.TradeSim.controller.response.BasicResponse;
-import br.com.pedrolourenco.TradeSim.controller.response.DataListMetadata;
-import br.com.pedrolourenco.TradeSim.controller.response.DataListResponse;
+import br.com.pedrolourenco.TradeSim.controller.response.PageMetadata;
 import br.com.pedrolourenco.TradeSim.controller.response.DataResponse;
-import br.com.pedrolourenco.TradeSim.domain.transaction.BalanceTransactionInputDTO;
-import br.com.pedrolourenco.TradeSim.domain.transaction.StockTransactionInputDTO;
-import br.com.pedrolourenco.TradeSim.domain.transaction.Transaction;
-import br.com.pedrolourenco.TradeSim.domain.transaction.TransactionOutputDTO;
+import br.com.pedrolourenco.TradeSim.controller.response.PagedDataResponse;
+import br.com.pedrolourenco.TradeSim.domain.transaction.*;
 import br.com.pedrolourenco.TradeSim.domain.user.User;
+import br.com.pedrolourenco.TradeSim.mapper.BalanceTransactionMapper;
 import br.com.pedrolourenco.TradeSim.mapper.TransactionMapper;
 import br.com.pedrolourenco.TradeSim.security.CustomUserDetails;
 import br.com.pedrolourenco.TradeSim.service.TransactionOrchestratorService;
@@ -37,10 +34,12 @@ public class TransactionController {
 
     private final TransactionMapper transactionMapper;
 
+    private final BalanceTransactionMapper balanceTransactionMapper;
+
     @GetMapping()
-    public ResponseEntity<DataListResponse<TransactionOutputDTO>> list(@RequestParam @PastOrPresent LocalDate startDate,
-                                                                       @RequestParam @PastOrPresent LocalDate endDate,
-                                                                       @PageableDefault(page = 0, size = 10, direction = Sort.Direction.ASC) Pageable pageable){
+    public ResponseEntity<PagedDataResponse<TransactionOutputDTO>> list(@RequestParam @PastOrPresent LocalDate startDate,
+                                                                        @RequestParam @PastOrPresent LocalDate endDate,
+                                                                        @PageableDefault(page = 0, size = 10, direction = Sort.Direction.ASC) Pageable pageable){
         Page<TransactionOutputDTO> page = transactionService.list(
                 getAuthenticatedUser().getId(),
                 pageable,
@@ -48,31 +47,53 @@ public class TransactionController {
                 endDate)
                 .map(transactionMapper::toDTO);
 
-        DataListMetadata metadata = new DataListMetadata(
-                page.getPageable().getPageNumber(),
+        PageMetadata metadata = new PageMetadata(
+                page.getNumber(),
                 page.getSize(),
+                page.getNumberOfElements(),
+                page.getTotalElements(),
                 page.getTotalPages(),
-                page.getNumberOfElements());
+                page.isFirst(),
+                page.isLast(),
+                page.hasNext(),
+                page.hasPrevious()
+        );
 
-        DataListResponse<TransactionOutputDTO> response = new DataListResponse<>(false, metadata, page);
+        String message = page.getNumberOfElements() == 0 ?
+                "Nenhuma transação encontrada" : "transações encontradas";
+
+        PagedDataResponse<TransactionOutputDTO> response = new PagedDataResponse<>(
+                false,
+                message,
+                metadata,
+                page.getContent()
+        );
 
         return ResponseEntity.ok(response);
     }
 
     @PostMapping("/deposit")
-    public ResponseEntity<BasicResponse> deposit(@RequestBody BalanceTransactionInputDTO amount){
-        transactionOrchestratorService.deposit(getAuthenticatedUser(), amount.getAmount());
+    public ResponseEntity<DataResponse<BalanceTransactionOutputDTO>> deposit(@RequestBody BalanceTransactionInputDTO amount){
+        Transaction transaction = transactionOrchestratorService.deposit(getAuthenticatedUser(), amount.getAmount());
 
-        BasicResponse response = new BasicResponse(false, "deposito realizado");
+        DataResponse<BalanceTransactionOutputDTO> response = new DataResponse<>(
+                false,
+                "deposito realizado",
+                balanceTransactionMapper.toDTO(transaction)
+        );
 
         return ResponseEntity.ok(response);
     }
 
     @PostMapping("/withdraw")
-    public ResponseEntity<BasicResponse> withdraw(@RequestBody BalanceTransactionInputDTO amount){
-        transactionOrchestratorService.withdraw(getAuthenticatedUser(), amount.getAmount());
+    public ResponseEntity<DataResponse<BalanceTransactionOutputDTO>> withdraw(@RequestBody BalanceTransactionInputDTO amount){
+        Transaction transaction = transactionOrchestratorService.withdraw(getAuthenticatedUser(), amount.getAmount());
 
-        BasicResponse response = new BasicResponse(false, "saque realizado");
+        DataResponse<BalanceTransactionOutputDTO> response = new DataResponse<>(
+                false,
+                "saque realizado",
+                balanceTransactionMapper.toDTO(transaction)
+        );
 
         return ResponseEntity.ok(response);
     }

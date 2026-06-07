@@ -1,8 +1,8 @@
 package br.com.pedrolourenco.TradeSim.controller;
 
-import br.com.pedrolourenco.TradeSim.controller.response.DataListMetadata;
-import br.com.pedrolourenco.TradeSim.controller.response.DataListResponse;
+import br.com.pedrolourenco.TradeSim.controller.response.PageMetadata;
 import br.com.pedrolourenco.TradeSim.controller.response.DataResponse;
+import br.com.pedrolourenco.TradeSim.controller.response.PagedDataResponse;
 import br.com.pedrolourenco.TradeSim.domain.stock.Stock;
 import br.com.pedrolourenco.TradeSim.domain.stock.StockOutputDTO;
 import br.com.pedrolourenco.TradeSim.domain.stock.StockPriceOutputDTO;
@@ -43,18 +43,32 @@ public class StockController {
     }
 
     @GetMapping
-    public ResponseEntity<DataListResponse<StockOutputDTO>> list(@PageableDefault(page = 0, size = 10, direction = Sort.Direction.ASC)
+    public ResponseEntity<PagedDataResponse<StockOutputDTO>> list(@PageableDefault(page = 0, size = 10, direction = Sort.Direction.ASC)
                      Pageable pageable){
         Page<StockOutputDTO> page = stockService.listStocks(pageable)
                 .map(stockMapper::toDTO);
 
-        DataListMetadata metadata = new DataListMetadata(
-                page.getPageable().getPageNumber(),
+        PageMetadata metadata = new PageMetadata(
+                page.getNumber(),
                 page.getSize(),
+                page.getNumberOfElements(),
+                page.getTotalElements(),
                 page.getTotalPages(),
-                page.getNumberOfElements());
+                page.isFirst(),
+                page.isLast(),
+                page.hasNext(),
+                page.hasPrevious()
+        );
 
-        DataListResponse<StockOutputDTO> response = new DataListResponse<>(false, metadata, page);
+        String message = page.getNumberOfElements() == 0 ?
+                "Nenhuma ação encontrada" : "ações encontradas";
+
+        PagedDataResponse<StockOutputDTO> response = new PagedDataResponse<>(
+                false,
+                message,
+                metadata,
+                page.getContent()
+        );
 
         return ResponseEntity.ok(response);
     }

@@ -29,7 +29,7 @@ public class TransactionOrchestratorService {
     private final PositionLedgerService positionLedgerService;
 
     @Transactional
-    public void withdraw(User user, BigDecimal amount){
+    public Transaction withdraw(User user, BigDecimal amount){
         if(amount.compareTo(balanceLedgerService.calculateBalance(user)) > 0){
             throw new UnprocessableDataException(
                     "Não é possível sacar um valor maior que seu saldo");
@@ -40,15 +40,19 @@ public class TransactionOrchestratorService {
         Transaction savedTransaction = transactionService.save(user, TransactionType.WITHDRAW, amount);
 
         balanceLedgerService.save(savedTransaction, BalanceLedgerType.DEBIT);
+
+        return savedTransaction;
     }
 
     @Transactional
-    public void deposit(User user, BigDecimal amount){
+    public Transaction deposit(User user, BigDecimal amount){
         userService.sumToBalance(user, amount);
 
         Transaction savedTransaction = transactionService.save(user, TransactionType.DEPOSIT, amount);
 
         balanceLedgerService.save(savedTransaction, BalanceLedgerType.CREDIT);
+
+        return savedTransaction;
     }
 
     @Transactional

@@ -7,18 +7,10 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Data
-public class TransactionOutputDTO {
+public class BalanceTransactionOutputDTO {
     private UUID transactionId;
 
     private TransactionType transactionType;
-
-    private String stockTicker;
-
-    private Long stockQuantity;
-
-    private BigDecimal stockPrice;
-
-    private BigDecimal fee;
 
     private BigDecimal amount;
 
