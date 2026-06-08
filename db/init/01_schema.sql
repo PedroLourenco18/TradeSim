@@ -87,8 +87,8 @@ CREATE INDEX idx_transactions_user_id ON transactions(user_id);
 -- Position Ledger
 CREATE INDEX idx_position_ledger_user_stock ON position_ledger(user_id, stock_id);
 
--- Positions (user + asset uniqueness is common in portfolio systems)
-CREATE UNIQUE INDEX idx_positions_user_id ON positions(user_id);
+-- Positions
+CREATE INDEX idx_positions_user_id ON positions(user_id);
 
 -- Balance Ledger
 CREATE INDEX idx_balance_ledger_user_id ON balance_ledger(user_id);
