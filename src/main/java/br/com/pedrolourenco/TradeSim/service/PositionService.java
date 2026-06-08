@@ -43,19 +43,20 @@ public class PositionService {
 
         BigDecimal floatingPnLValue = stockPrice
                 .subtract(position.getAveragePrice())
-                .multiply(BigDecimal.valueOf(position.getQuantity()));
+                .multiply(BigDecimal.valueOf(position.getQuantity()))
+                .setScale(2, RoundingMode.HALF_EVEN);
 
         BigDecimal floatingPnLPercentage = stockPrice
                 .subtract(position.getAveragePrice())
-                .divide(stockPrice, 4, RoundingMode.HALF_UP)
+                .divide(stockPrice, 2, RoundingMode.HALF_EVEN)
                 .multiply(BigDecimal.valueOf(100));
 
         return new PositionMetrics(stock.getName(),
                 ticker,
                 position.getQuantity(),
-                stockPrice,
-                totalValue,
-                position.getAveragePrice(),
+                stockPrice.setScale(2, RoundingMode.HALF_EVEN),
+                totalValue.setScale(2, RoundingMode.HALF_EVEN),
+                position.getAveragePrice().setScale(2, RoundingMode.HALF_EVEN),
                 floatingPnLValue,
                 floatingPnLPercentage);
     }
@@ -79,7 +80,7 @@ public class PositionService {
             positionsInfo.add(new PositionBasicInfo(
                     position.getStock().getName(),
                     position.getStock().getTicker(),
-                    positionTotalValue,
+                    positionTotalValue.setScale(2, RoundingMode.HALF_EVEN),
                     null));
 
             portfolioAveragePrice = portfolioAveragePrice.add(positionAveragePrice);
@@ -96,12 +97,14 @@ public class PositionService {
         for(PositionBasicInfo position:positionsInfo){
             position.setPortfolioWeight(position.getTotalValue()
                             .divide(portfolioTotalValue, 4, RoundingMode.HALF_UP)
-                            .multiply(BigDecimal.valueOf(100)));
+                            .multiply(BigDecimal.valueOf(100))
+                            .setScale(2, RoundingMode.HALF_EVEN));
         }
 
-        return new PortfolioMetrics(portfolioTotalValue,
-                portfolioFloatingPnLValue,
-                portfolioFloatingPnLPercentage,
+        return new PortfolioMetrics(
+                portfolioTotalValue.setScale(2, RoundingMode.HALF_EVEN),
+                portfolioFloatingPnLValue.setScale(2, RoundingMode.HALF_EVEN),
+                portfolioFloatingPnLPercentage.setScale(2, RoundingMode.HALF_EVEN),
                 positionsInfo);
     }
 
@@ -115,7 +118,7 @@ public class PositionService {
             BigDecimal averagePrice =
                     position.getAveragePrice().multiply(BigDecimal.valueOf(position.getQuantity()))
                     .add(transaction.getPrice().multiply(BigDecimal.valueOf(transaction.getQuantity())))
-                    .divide(BigDecimal.valueOf(position.getQuantity() + transaction.getQuantity()), 4, RoundingMode.HALF_UP);
+                    .divide(BigDecimal.valueOf(position.getQuantity() + transaction.getQuantity()), 4, RoundingMode.HALF_EVEN);
 
             position.setQuantity(position.getQuantity() + transaction.getQuantity());
 
@@ -130,7 +133,7 @@ public class PositionService {
         position.setUser(transaction.getUser());
         position.setStock(transaction.getStock());
         position.setQuantity(transaction.getQuantity());
-        position.setAveragePrice(transaction.getPrice());
+        position.setAveragePrice(transaction.getPrice().setScale(4, RoundingMode.HALF_EVEN));
         positionRepository.save(position);
     }
 

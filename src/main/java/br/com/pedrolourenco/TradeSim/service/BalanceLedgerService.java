@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 
 @Service
 @RequiredArgsConstructor
@@ -20,7 +21,7 @@ public class BalanceLedgerService {
 
         balanceLedger.setUser(transaction.getUser());
         balanceLedger.setTransaction(transaction);
-        balanceLedger.setAmount(transaction.getAmount());
+        balanceLedger.setAmount(transaction.getAmount().setScale(4, RoundingMode.HALF_EVEN));
         balanceLedger.setType(type);
 
         balanceLedgerRepository.save(balanceLedger);
@@ -31,9 +32,6 @@ public class BalanceLedgerService {
                 .map(l -> l.getType() ==
                         BalanceLedgerType.CREDIT ? l.getAmount() : l.getAmount().negate())
                 .reduce(BigDecimal::add)
-                .orElseGet(() -> {
-                    //TODO log de alerta
-                    return BigDecimal.ZERO;
-                });
+                .orElse(BigDecimal.ZERO);
     }
 }

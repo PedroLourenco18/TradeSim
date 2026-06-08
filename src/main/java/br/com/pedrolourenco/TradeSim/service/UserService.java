@@ -9,6 +9,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.util.UUID;
 
@@ -60,6 +61,6 @@ public class UserService {
     }
 
     public void sumToBalance(User user, BigDecimal amount){
-        userRepository.addBalance(user.getId(), amount);
+        userRepository.addBalance(user.getId(), amount.setScale(4, RoundingMode.HALF_EVEN));
     }
 }
