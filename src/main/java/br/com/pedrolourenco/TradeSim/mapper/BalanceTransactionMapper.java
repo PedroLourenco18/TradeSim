@@ -10,5 +10,6 @@ public interface BalanceTransactionMapper {
     @Mapping(source = "id", target = "transactionId")
     @Mapping(source = "type", target = "transactionType")
     @Mapping(source = "createdAt", target = "transactionTime")
+    @Mapping(target = "amount", expression = "java( transaction.getAmount().setScale(2, java.math.RoundingMode.HALF_EVEN) )")
     BalanceTransactionOutputDTO toDTO(Transaction transaction);
 }

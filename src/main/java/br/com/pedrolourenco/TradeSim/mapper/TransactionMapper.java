@@ -11,7 +11,9 @@ public interface TransactionMapper {
     @Mapping(source = "type", target = "transactionType")
     @Mapping(source = "stock.ticker", target = "stockTicker")
     @Mapping(source = "quantity", target = "stockQuantity")
-    @Mapping(source = "price", target = "stockPrice")
+    @Mapping(target = "stockPrice", expression = "java( transaction.getPrice() == null ? null : transaction.getPrice().setScale(2, java.math.RoundingMode.HALF_EVEN) )")
     @Mapping(source = "createdAt", target = "transactionTime")
+    @Mapping(target = "amount", expression = "java( transaction.getAmount() == null ? null : transaction.getAmount().setScale(2, java.math.RoundingMode.HALF_EVEN) )")
+    @Mapping(target = "fee", expression = "java( transaction.getFee() == null ? null : transaction.getFee().setScale(2, java.math.RoundingMode.HALF_EVEN) )")
     TransactionOutputDTO toDTO(Transaction transaction);
 }
