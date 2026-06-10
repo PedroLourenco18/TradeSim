@@ -20,7 +20,7 @@ public class StockService {
     private final StockDataGateway stockDataGateway;
 
     public Stock findByTicker(String ticker){
-        Optional<Stock> stockOptional = stockRepository.findByTickerAndActiveIsTrue(ticker);
+        Optional<Stock> stockOptional = stockRepository.findByTicker(ticker);
 
         if(stockOptional.isEmpty()){
             throw new ResourceNotFoundException("Essa ação não esta disponível nessa plataforma");
@@ -29,8 +29,19 @@ public class StockService {
         return stockOptional.get();
     }
 
+    public Stock findActiveByTicker(String ticker){
+        Optional<Stock> stockOptional = stockRepository.findByTickerAndActiveIsTrue(ticker);
+
+        if(stockOptional.isEmpty()){
+            throw new ResourceNotFoundException(
+                    "Essa ação não esta disponível ou esta inativa nessa plataforma");
+        }
+
+        return stockOptional.get();
+    }
+
     public Page<Stock> listStocks(Pageable pageable){
-        return stockRepository.findAll(pageable);
+        return stockRepository.findByActiveIsTrue(pageable);
     }
 
     public BigDecimal getStockPrice(String ticker){

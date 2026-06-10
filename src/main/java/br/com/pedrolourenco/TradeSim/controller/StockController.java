@@ -31,7 +31,7 @@ public class StockController {
 
     @GetMapping("/{ticker}")
     public ResponseEntity<DataResponse<StockPriceOutputDTO>> findByTicker(@PathVariable String ticker){
-        Stock stock = stockService.findByTicker(ticker);
+        Stock stock = stockService.findActiveByTicker(ticker);
 
         BigDecimal currentStockPrice = stockService.getStockPrice(ticker);
 

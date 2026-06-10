@@ -57,7 +57,7 @@ public class TransactionOrchestratorService {
 
     @Transactional
     public Transaction buyStock(User user, String stockTicker, Long quantity){
-        Stock stock = stockService.findByTicker(stockTicker);
+        Stock stock = stockService.findActiveByTicker(stockTicker);
 
         BigDecimal stockPrice = stockService.getStockPrice(stockTicker);
 
