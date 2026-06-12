@@ -14,6 +14,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.math.MathContext;
 import java.math.RoundingMode;
 import java.util.LinkedList;
 import java.util.List;
@@ -43,12 +44,11 @@ public class PositionService {
 
         BigDecimal floatingPnLValue = stockPrice
                 .subtract(position.getAveragePrice())
-                .multiply(BigDecimal.valueOf(position.getQuantity()))
-                .setScale(2, RoundingMode.HALF_EVEN);
+                .multiply(BigDecimal.valueOf(position.getQuantity()));
 
         BigDecimal floatingPnLPercentage = stockPrice
                 .subtract(position.getAveragePrice())
-                .divide(stockPrice, 2, RoundingMode.HALF_EVEN)
+                .divide(stockPrice, new MathContext(16, RoundingMode.HALF_EVEN))
                 .multiply(BigDecimal.valueOf(100));
 
         return new PositionMetrics(stock.getName(),
@@ -57,8 +57,8 @@ public class PositionService {
                 stockPrice.setScale(2, RoundingMode.HALF_EVEN),
                 totalValue.setScale(2, RoundingMode.HALF_EVEN),
                 position.getAveragePrice().setScale(2, RoundingMode.HALF_EVEN),
-                floatingPnLValue,
-                floatingPnLPercentage);
+                floatingPnLValue.setScale(2, RoundingMode.HALF_EVEN),
+                floatingPnLPercentage.setScale(2, RoundingMode.HALF_EVEN));
     }
 
     public PortfolioMetrics getPortfolioMetrics(User user){
@@ -91,12 +91,12 @@ public class PositionService {
         BigDecimal portfolioFloatingPnLValue = portfolioTotalValue.subtract(portfolioAveragePrice);
 
         BigDecimal portfolioFloatingPnLPercentage = portfolioFloatingPnLValue
-                .divide(portfolioAveragePrice, 4, RoundingMode.HALF_UP)
+                .divide(portfolioAveragePrice, new MathContext(16, RoundingMode.HALF_EVEN))
                 .multiply(BigDecimal.valueOf(100));
 
         for(PositionBasicInfo position:positionsInfo){
             position.setPortfolioWeight(position.getTotalValue()
-                            .divide(portfolioTotalValue, 4, RoundingMode.HALF_UP)
+                            .divide(portfolioTotalValue, new MathContext(16, RoundingMode.HALF_EVEN))
                             .multiply(BigDecimal.valueOf(100))
                             .setScale(2, RoundingMode.HALF_EVEN));
         }
