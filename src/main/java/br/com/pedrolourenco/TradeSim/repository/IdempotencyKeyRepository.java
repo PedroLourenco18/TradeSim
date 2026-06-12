@@ -30,9 +30,14 @@ public interface IdempotencyKeyRepository extends JpaRepository<IdempotencyKey, 
     @Modifying
     @Transactional
     @Query(value = """
-        INSERT INTO idempotency_keys (idempotency_key, user_id, path, status, created_at, expire_at)
-        VALUES (:key, :userId, :path, 'PROCESSING', NOW(), :expireAt)
-        ON CONFLICT (idempotency_key, user_id, path) DO NOTHING
+       INSERT INTO idempotency_keys (idempotency_key, user_id, path, status, created_at, expire_at)
+       VALUES (:key, :userId, :path, 'PROCESSING', NOW(), :expireAt)
+       ON CONFLICT (idempotency_key, user_id, path)
+       DO UPDATE SET
+           status     = 'PROCESSING',
+           created_at = NOW(),
+           expire_at  = :expireAt
+       WHERE idempotency_keys.expire_at < NOW()
     """, nativeQuery = true)
     int insertIfAbsent(
             @Param("key") UUID key,
