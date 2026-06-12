@@ -3,6 +3,7 @@ package br.com.pedrolourenco.TradeSim.controller;
 import br.com.pedrolourenco.TradeSim.controller.response.AuthResponse;
 import br.com.pedrolourenco.TradeSim.domain.user.AuthenticationUserInputDTO;
 import br.com.pedrolourenco.TradeSim.service.AuthenticationService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -17,7 +18,7 @@ public class AuthenticationController {
     private final AuthenticationService authenticationService;
 
     @PostMapping("/login")
-    public ResponseEntity<AuthResponse> login(@RequestBody AuthenticationUserInputDTO authUser){
+    public ResponseEntity<AuthResponse> login(@RequestBody @Valid AuthenticationUserInputDTO authUser){
         String jwt = authenticationService.login(authUser.getCpf(), authUser.getPassword());
 
         AuthResponse response = new AuthResponse(false, jwt);

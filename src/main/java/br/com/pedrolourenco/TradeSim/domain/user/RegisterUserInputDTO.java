@@ -4,8 +4,6 @@ import jakarta.validation.constraints.*;
 import lombok.Data;
 import org.hibernate.validator.constraints.br.CPF;
 
-import java.time.LocalDate;
-
 @Data
 public class RegisterUserInputDTO {
     @NotBlank(message = "O nome não pode estar em branco")
@@ -22,11 +20,12 @@ public class RegisterUserInputDTO {
 
     @NotBlank(message = "O cpf não pode estar em branco")
     @CPF(message = "Insira um cpf válido")
+    @Pattern(regexp = "\\d{11}", message = "Insira um cpf válido")
     private String cpf;
 
-    @NotNull(message = "A data de nascimento não pode estar em branco")
-    @Past(message = "Insira uma data de nascimento válida")
-    private LocalDate birthDate;
+    @NotBlank(message = "A data de nascimento não pode estar em branco")
+    @Pattern(regexp = "^\\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12]\\d|3[01])$", message = "Data deve estar no formato yyyy-MM-dd")
+    private String birthDate;
 
     @NotBlank(message = "A senha não pode estar em branco")
     @Size(min = 4, max = 20, message = "A senha deve ter entre 4 e 20 caracteres")

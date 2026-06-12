@@ -7,6 +7,7 @@ import br.com.pedrolourenco.TradeSim.exception.InternalErrorException;
 import br.com.pedrolourenco.TradeSim.exception.ResourceNotFoundException;
 import br.com.pedrolourenco.TradeSim.exception.UnprocessableDataException;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -65,7 +66,8 @@ public class GlobalHandlerException {
                 .stream()
                 .collect(Collectors.toMap(FieldError::getField,
                         fieldError ->
-                                fieldError.getDefaultMessage() == null ? "" : fieldError.getDefaultMessage()
+                                fieldError.getDefaultMessage() == null ? "" : fieldError.getDefaultMessage(),
+                                (msg1, msg2) -> msg1
                 ));
 
         FieldsErrorResponse response = new FieldsErrorResponse(
@@ -74,6 +76,16 @@ public class GlobalHandlerException {
                 fields
         );
         return ResponseEntity.badRequest().body(response);
+    }
+
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public ResponseEntity<?> handleNotReadable(HttpMessageNotReadableException e) {
+        BasicResponse response = new BasicResponse(
+                true,
+                "Formato de requisição inválido"
+        );
+
+        return ResponseEntity.status(400).body(response);
     }
 
     @ExceptionHandler(Exception.class)

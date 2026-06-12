@@ -9,6 +9,7 @@ import org.mapstruct.Mapping;
 
 @Mapper(componentModel = "spring")
 public interface UserMapper {
+    @Mapping(target = "birthDate", expression = "java( java.time.LocalDate.parse(dto.getBirthDate()) )")
     User toEntity(RegisterUserInputDTO dto);
     User toEntity(UpdateUserInputDTO dto);
 
