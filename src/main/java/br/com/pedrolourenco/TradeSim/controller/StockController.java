@@ -6,8 +6,10 @@ import br.com.pedrolourenco.TradeSim.controller.response.PagedDataResponse;
 import br.com.pedrolourenco.TradeSim.domain.stock.Stock;
 import br.com.pedrolourenco.TradeSim.domain.stock.StockOutputDTO;
 import br.com.pedrolourenco.TradeSim.domain.stock.StockPriceOutputDTO;
+import br.com.pedrolourenco.TradeSim.exception.UnprocessableDataException;
 import br.com.pedrolourenco.TradeSim.mapper.StockMapper;
 import br.com.pedrolourenco.TradeSim.service.StockService;
+import br.com.pedrolourenco.TradeSim.utils.ApiUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -29,6 +31,8 @@ public class StockController {
 
     private final StockMapper stockMapper;
 
+    private final ApiUtils apiUtils;
+
     @GetMapping("/{ticker}")
     public ResponseEntity<DataResponse<StockPriceOutputDTO>> findByTicker(@PathVariable String ticker){
         Stock stock = stockService.findActiveByTicker(ticker);
@@ -45,6 +49,13 @@ public class StockController {
     @GetMapping
     public ResponseEntity<PagedDataResponse<StockOutputDTO>> list(@PageableDefault(page = 0, size = 10, direction = Sort.Direction.ASC)
                      Pageable pageable){
+        pageable.getSort().map(Sort.Order::getProperty)
+                .forEach(p -> {
+                    if(!apiUtils.hasAttribute(Stock.class, p)){
+                        throw new UnprocessableDataException("campo de sort invalido");
+                    }
+                });
+
         Page<StockOutputDTO> page = stockService.listStocks(pageable)
                 .map(stockMapper::toDTO);
 
