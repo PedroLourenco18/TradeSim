@@ -1,32 +1,35 @@
 package br.com.pedrolourenco.TradeSim.controller;
 
+import br.com.pedrolourenco.TradeSim.controller.request.DateRangeRequest;
 import br.com.pedrolourenco.TradeSim.controller.response.PageMetadata;
 import br.com.pedrolourenco.TradeSim.controller.response.DataResponse;
 import br.com.pedrolourenco.TradeSim.controller.response.PagedDataResponse;
 import br.com.pedrolourenco.TradeSim.domain.transaction.*;
 import br.com.pedrolourenco.TradeSim.domain.user.User;
+import br.com.pedrolourenco.TradeSim.exception.UnprocessableDataException;
 import br.com.pedrolourenco.TradeSim.mapper.BalanceTransactionMapper;
 import br.com.pedrolourenco.TradeSim.mapper.TransactionMapper;
 import br.com.pedrolourenco.TradeSim.security.CustomUserDetails;
 import br.com.pedrolourenco.TradeSim.service.TransactionOrchestratorService;
 import br.com.pedrolourenco.TradeSim.service.TransactionService;
-import jakarta.validation.constraints.PastOrPresent;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/transactions")
 @RequiredArgsConstructor
-@Validated
 public class TransactionController {
     private final TransactionService transactionService;
 
@@ -36,13 +39,30 @@ public class TransactionController {
 
     private final BalanceTransactionMapper balanceTransactionMapper;
 
+    private static final Map<String, String> SORT_FIELDS = Map.of(
+            "transactionType", "type",
+            "transactionTime", "createdAt",
+            "stockTicker",     "stock.ticker",
+            "amount",          "amount"
+    );
+
     @GetMapping()
-    public ResponseEntity<PagedDataResponse<TransactionOutputDTO>> list(@RequestParam @PastOrPresent LocalDate startDate,
-                                                                        @RequestParam @PastOrPresent LocalDate endDate,
+    public ResponseEntity<PagedDataResponse<TransactionOutputDTO>> list(@Valid @ModelAttribute DateRangeRequest dateRange,
                                                                         @PageableDefault(page = 0, size = 10, direction = Sort.Direction.ASC) Pageable pageable){
+        LocalDate startDate = LocalDate.parse(dateRange.startDate());
+        LocalDate endDate = LocalDate.parse(dateRange.endDate());
+
+        if (startDate.isAfter(endDate)) {
+            throw new UnprocessableDataException("A data inicial deve ser igual ou posterior a final");
+        }
+
+        if(endDate.isAfter(LocalDate.now())){
+            throw new UnprocessableDataException("Ambas as datas devem ser no presente ou passado");
+        }
+
         Page<TransactionOutputDTO> page = transactionService.list(
                 getAuthenticatedUser().getId(),
-                pageable,
+                translateSort(pageable),
                 startDate,
                 endDate)
                 .map(transactionMapper::toDTO);
@@ -73,8 +93,8 @@ public class TransactionController {
     }
 
     @PostMapping("/deposit")
-    public ResponseEntity<DataResponse<BalanceTransactionOutputDTO>> deposit(@RequestBody BalanceTransactionInputDTO amount){
-        Transaction transaction = transactionOrchestratorService.deposit(getAuthenticatedUser(), amount.getAmount());
+    public ResponseEntity<DataResponse<BalanceTransactionOutputDTO>> deposit(@RequestBody @Valid BalanceTransactionInputDTO amount){
+        Transaction transaction = transactionOrchestratorService.deposit(getAuthenticatedUser(), new BigDecimal(amount.getAmount()));
 
         DataResponse<BalanceTransactionOutputDTO> response = new DataResponse<>(
                 false,
@@ -86,8 +106,8 @@ public class TransactionController {
     }
 
     @PostMapping("/withdraw")
-    public ResponseEntity<DataResponse<BalanceTransactionOutputDTO>> withdraw(@RequestBody BalanceTransactionInputDTO amount){
-        Transaction transaction = transactionOrchestratorService.withdraw(getAuthenticatedUser(), amount.getAmount());
+    public ResponseEntity<DataResponse<BalanceTransactionOutputDTO>> withdraw(@RequestBody @Valid BalanceTransactionInputDTO amount){
+        Transaction transaction = transactionOrchestratorService.withdraw(getAuthenticatedUser(), new BigDecimal(amount.getAmount()));
 
         DataResponse<BalanceTransactionOutputDTO> response = new DataResponse<>(
                 false,
@@ -100,8 +120,8 @@ public class TransactionController {
 
     @PostMapping("/buy/{ticker}")
     public ResponseEntity<DataResponse<TransactionOutputDTO>> buyStock(@PathVariable String ticker,
-                                                                       @RequestBody StockTransactionInputDTO quantity){
-        Transaction transaction = transactionOrchestratorService.buyStock(getAuthenticatedUser(), ticker, quantity.getQuantity());
+                                                                       @RequestBody @Valid StockTransactionInputDTO quantity){
+        Transaction transaction = transactionOrchestratorService.buyStock(getAuthenticatedUser(), ticker, Long.parseLong(quantity.getQuantity()));
 
         DataResponse<TransactionOutputDTO> response = new DataResponse<>(
                 false,
@@ -113,8 +133,8 @@ public class TransactionController {
 
     @PostMapping("sell/{ticker}")
     public ResponseEntity<DataResponse<TransactionOutputDTO>> sellStock(@PathVariable String ticker,
-                                                                       @RequestBody StockTransactionInputDTO quantity){
-        Transaction transaction = transactionOrchestratorService.sellStock(getAuthenticatedUser(), ticker, quantity.getQuantity());
+                                                                       @RequestBody @Valid StockTransactionInputDTO quantity){
+        Transaction transaction = transactionOrchestratorService.sellStock(getAuthenticatedUser(), ticker, Long.parseLong(quantity.getQuantity()));
 
         DataResponse<TransactionOutputDTO> response = new DataResponse<>(
                 false,
@@ -131,5 +151,22 @@ public class TransactionController {
         user.setId(userDetails.getId());
 
         return user;
+    }
+
+    private Pageable translateSort(Pageable pageable) {
+        return PageRequest.of(
+                pageable.getPageNumber(),
+                pageable.getPageSize(),
+                Sort.by(pageable.getSort().stream()
+                        .map(o -> {
+                            String property = SORT_FIELDS.get(o.getProperty());
+                            if(property == null){
+                                throw new UnprocessableDataException("campo de sort invalido");
+                            }
+
+                            return o.withProperty(property);
+                        })
+                        .toList())
+        );
     }
 }

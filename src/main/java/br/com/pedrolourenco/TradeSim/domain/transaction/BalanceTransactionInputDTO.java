@@ -1,12 +1,12 @@
 package br.com.pedrolourenco.TradeSim.domain.transaction;
 
-import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
 import lombok.Data;
-
-import java.math.BigDecimal;
 
 @Data
 public class BalanceTransactionInputDTO {
-    @Positive
-    private BigDecimal amount;
+    @NotBlank(message = "amount faltando")
+    @Pattern(regexp = "^\\d+(\\.\\d{1,2})?$", message = "Deve ser um número com no máximo 2 casas decimais")
+    private String amount;
 }
