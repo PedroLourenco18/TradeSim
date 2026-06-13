@@ -8,6 +8,7 @@ import br.com.pedrolourenco.TradeSim.exception.ResourceNotFoundException;
 import br.com.pedrolourenco.TradeSim.exception.UnprocessableDataException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -79,13 +80,24 @@ public class GlobalHandlerException {
     }
 
     @ExceptionHandler(HttpMessageNotReadableException.class)
-    public ResponseEntity<?> handleNotReadable(HttpMessageNotReadableException e) {
+    public ResponseEntity<BasicResponse> handleNotReadableException(HttpMessageNotReadableException e) {
         BasicResponse response = new BasicResponse(
                 true,
                 "Formato de requisição inválido"
         );
 
         return ResponseEntity.status(400).body(response);
+    }
+
+    @ExceptionHandler(BadCredentialsException.class)
+    public ResponseEntity<BasicResponse> handleBadCredentialsException(
+            BadCredentialsException e) {
+        BasicResponse response = new BasicResponse(
+                true,
+                "Usuario não autenticado"
+        );
+
+        return ResponseEntity.status(401).body(response);
     }
 
     @ExceptionHandler(Exception.class)

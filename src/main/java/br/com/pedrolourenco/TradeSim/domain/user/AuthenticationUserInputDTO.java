@@ -1,6 +1,7 @@
 package br.com.pedrolourenco.TradeSim.domain.user;
 
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
 import org.hibernate.validator.constraints.br.CPF;
@@ -9,6 +10,7 @@ import org.hibernate.validator.constraints.br.CPF;
 public class AuthenticationUserInputDTO {
     @NotBlank(message = "O cpf não pode estar em branco")
     @CPF(message = "Insira um cpf válido")
+    @Pattern(regexp = "\\d{11}", message = "Insira um cpf válido")
     private String cpf;
 
     @NotBlank(message = "A senha não pode estar em branco")
