@@ -4,7 +4,6 @@ import br.com.pedrolourenco.TradeSim.controller.response.BasicResponse;
 import br.com.pedrolourenco.TradeSim.controller.response.DataResponse;
 import br.com.pedrolourenco.TradeSim.domain.user.RegisterUserInputDTO;
 import br.com.pedrolourenco.TradeSim.domain.user.UpdateUserInputDTO;
-import br.com.pedrolourenco.TradeSim.domain.user.User;
 import br.com.pedrolourenco.TradeSim.domain.user.UserOutputDTO;
 import br.com.pedrolourenco.TradeSim.mapper.UserMapper;
 import br.com.pedrolourenco.TradeSim.security.CustomUserDetails;
@@ -33,7 +32,7 @@ public class UserController {
 
         DataResponse<UserOutputDTO> response = new DataResponse<>(
                 false,
-                "Usuario encontrado",
+                "User found",
                 userOutputDTO
         );
 
@@ -46,7 +45,7 @@ public class UserController {
 
         BasicResponse response = new BasicResponse(
                 false,
-                "Usuario criado com sucesso!"
+                "User created successfully!"
         );
 
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
@@ -58,7 +57,7 @@ public class UserController {
 
         BasicResponse response = new BasicResponse(
                 false,
-                "Usuario editado com sucesso!"
+                "User updated successfully!"
         );
 
         return ResponseEntity.ok().body(response);
@@ -70,7 +69,7 @@ public class UserController {
 
         BasicResponse response = new BasicResponse(
                 false,
-                "Usuario deletado com sucesso!"
+                "User deleted successfully!"
         );
 
         return ResponseEntity.ok().body(response);
