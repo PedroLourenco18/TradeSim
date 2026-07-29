@@ -73,7 +73,7 @@ public class GlobalHandlerException {
 
         FieldsErrorResponse response = new FieldsErrorResponse(
                 true,
-                "Campos Inválidos",
+                "Invalid Field(s)",
                 fields
         );
         return ResponseEntity.badRequest().body(response);
@@ -83,7 +83,7 @@ public class GlobalHandlerException {
     public ResponseEntity<BasicResponse> handleNotReadableException(HttpMessageNotReadableException e) {
         BasicResponse response = new BasicResponse(
                 true,
-                "Formato de requisição inválido"
+                "Invalid request format"
         );
 
         return ResponseEntity.status(400).body(response);
@@ -94,7 +94,7 @@ public class GlobalHandlerException {
             BadCredentialsException e) {
         BasicResponse response = new BasicResponse(
                 true,
-                "Usuario não autenticado"
+                "User not authenticated"
         );
 
         return ResponseEntity.status(401).body(response);
@@ -104,7 +104,7 @@ public class GlobalHandlerException {
     public ResponseEntity<BasicResponse> handleException(Exception e){
         BasicResponse response = new BasicResponse(
                 true,
-                "Houve um erro interno"
+                "An internal error occurred"
         );
 
         return ResponseEntity.status(500).body(response);

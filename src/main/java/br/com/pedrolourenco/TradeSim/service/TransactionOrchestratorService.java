@@ -32,7 +32,7 @@ public class TransactionOrchestratorService {
     public Transaction withdraw(User user, BigDecimal amount){
         if(amount.compareTo(balanceLedgerService.calculateBalance(user)) > 0){
             throw new UnprocessableDataException(
-                    "Não é possível sacar um valor maior que seu saldo");
+                    "Cannot withdraw an amount greater than your balance");
         }
 
         userService.sumToBalance(user, amount.negate());
@@ -65,7 +65,7 @@ public class TransactionOrchestratorService {
 
         if(purchasePrice.compareTo(balanceLedgerService.calculateBalance(user)) > 0){
             throw new UnprocessableDataException(
-                    "Não é possível fazer uma compra com valor maior que o saldo");
+                    "Cannot make a purchase with an amount greater than the balance");
         }
 
         Transaction savedTransaction = transactionService.save(user, TransactionType.STOCK_BUY, stock, quantity, stockPrice, purchasePrice, BigDecimal.ZERO);
@@ -89,7 +89,7 @@ public class TransactionOrchestratorService {
 
         if(quantity.compareTo(usersPortfolioQuantity) > 0){
             throw new UnprocessableDataException(
-                    "Não é possível vender mais ações do que voce possui");
+                    "Cannot sell more shares than you own");
         }
 
         BigDecimal stockPrice = stockService.getStockPrice(stockTicker);
@@ -121,7 +121,7 @@ public class TransactionOrchestratorService {
     }
 
     private BigDecimal calculateFeeAmount(BigDecimal grossValue){
-        //taxa B3(0,03%) + IRRF(0,005%)
+        // B3 fee(0.03%) + IRRF(0.005%)
         BigDecimal B3Fee = new BigDecimal("0.0003");
         BigDecimal IRRFFee = new BigDecimal("0.00005");
         BigDecimal totalFee = B3Fee.add(IRRFFee);

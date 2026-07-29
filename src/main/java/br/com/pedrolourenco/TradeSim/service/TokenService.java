@@ -27,7 +27,7 @@ public class TokenService {
                     .withExpiresAt(genExpirationDate())
                     .sign(algorithm);
         }catch (JWTCreationException e){
-            throw new InternalErrorException("Erro ao gerar o token jwt");
+            throw new InternalErrorException("Error while generating JWT token");
         }
     }
 

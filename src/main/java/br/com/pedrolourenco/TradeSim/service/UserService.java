@@ -23,17 +23,17 @@ public class UserService {
     public void register(User userInput){
         if(userRepository.existsByEmail(userInput.getEmail())){
             throw new ConflictDataException(
-                    "O email '" + userInput.getEmail() + "' ja esta sendo usado");
+                    "The email '" + userInput.getEmail() + "' is already in use");
         }
 
         if(userRepository.existsByCpf(userInput.getCpf())){
             throw new ConflictDataException(
-                    "Uma conta ja foi criada usado o cpf '" + userInput.getCpf() + "'");
+                    "An account has already been created using the CPF '" + userInput.getCpf() + "'");
         }
 
         if(userInput.getBirthDate().isAfter(LocalDate.now().minusYears(18))){
             throw new UnprocessableDataException(
-                    "É necessário ser maior de idade para criar uma conta");
+                    "You must be of legal age to create an account");
         }
 
         userInput.setActive(true);
@@ -50,7 +50,7 @@ public class UserService {
     public void update(UUID id, User updateUserInput){
         if(userRepository.existsByEmailIsAndIdIsNot(updateUserInput.getEmail(), id)){
             throw new ConflictDataException(
-                    "O email '" + updateUserInput.getEmail() + "' ja esta sendo usado");
+                    "The email '" + updateUserInput.getEmail() + "' is already in use");
         }
 
         userRepository.updateNicknameAndEmail(id, updateUserInput.getNickname(), updateUserInput.getEmail());

@@ -33,7 +33,7 @@ public class PositionService {
         Optional<Position> positionOptional = positionRepository.findByUserAndStock(user, stock);
 
         if(positionOptional.isEmpty()){
-            throw new ResourceNotFoundException("usuario não possui essa ação");
+            throw new ResourceNotFoundException("User does not own this stock");
         }
 
         Position position = positionOptional.get();
@@ -142,7 +142,7 @@ public class PositionService {
                 .findByUserAndStock(transaction.getUser(), transaction.getStock());
 
         if(positionOptional.isEmpty()){
-            throw new InternalErrorException("Houve um problema interno");
+            throw new InternalErrorException("An internal error occurred");
         }
 
         Position position = positionOptional.get();

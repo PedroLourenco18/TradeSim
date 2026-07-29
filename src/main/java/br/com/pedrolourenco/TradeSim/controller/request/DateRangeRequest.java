@@ -1,14 +1,18 @@
 package br.com.pedrolourenco.TradeSim.controller.request;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 
+@Schema(description = "Request object for filtering data by a date range.")
 public record DateRangeRequest(
-        @NotBlank(message = "data inicial esta faltando")
-        @Pattern(regexp = "^\\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12]\\d|3[01])$", message = "Data deve estar no formato yyyy-MM-dd")
+        @Schema(description = "The start date of the range in yyyy-MM-dd format.", example = "2023-01-01")
+        @NotBlank(message = "start date is missing")
+        @Pattern(regexp = "^\\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12]\\d|3[01])$", message = "Date must be in yyyy-MM-dd format")
         String startDate,
 
-        @NotBlank(message = "data final esta faltando")
-        @Pattern(regexp = "^\\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12]\\d|3[01])$", message = "Data deve estar no formato yyyy-MM-dd")
+        @Schema(description = "The end date of the range in yyyy-MM-dd format.", example = "2023-12-31")
+        @NotBlank(message = "end date is missing")
+        @Pattern(regexp = "^\\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12]\\d|3[01])$", message = "Date must be in yyyy-MM-dd format")
         String endDate
 ) {}

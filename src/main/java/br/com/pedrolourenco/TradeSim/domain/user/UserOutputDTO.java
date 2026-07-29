@@ -1,43 +1,30 @@
 package br.com.pedrolourenco.TradeSim.domain.user;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
-/**
- * DTO (Data Transfer Object) utilizado para representar os dados de um usuário
- * que serão retornados na resposta da API.
- */
 @Data
+@Schema(description = "Data Transfer Object representing user information returned by the API.")
 public class UserOutputDTO {
-    /**
-     * Nome completo do usuário.
-     */
+
+    @Schema(description = "The full name of the user.", example = "John Doe")
     private String name;
 
-    /**
-     * Apelido ou nome de exibição do usuário.
-     */
+    @Schema(description = "The user's nickname or display name.", example = "johndoe")
     private String nickname;
 
-    /**
-     * Endereço de e-mail do usuário.
-     */
+    @Schema(description = "The user's email address.", example = "john.doe@example.com")
     private String email;
 
-    /**
-     * CPF do usuário.
-     */
+    @Schema(description = "The user's CPF (Brazilian tax ID) as a numeric string.", example = "12345678900")
     private String cpf;
 
-    /**
-     * Data de nascimento do usuário.
-     */
+    @Schema(description = "The user's date of birth.", example = "1990-01-01")
     private LocalDate birthDate;
 
-    /**
-     * Saldo atual disponível na conta do usuário.
-     */
+    @Schema(description = "The current available balance in the user's account.", example = "1500.50")
     private BigDecimal balance;
 }

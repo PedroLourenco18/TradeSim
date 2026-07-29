@@ -23,7 +23,7 @@ public class StockService {
         Optional<Stock> stockOptional = stockRepository.findByTicker(ticker);
 
         if(stockOptional.isEmpty()){
-            throw new ResourceNotFoundException("Essa ação não esta disponível nessa plataforma");
+            throw new ResourceNotFoundException("This stock is not available on this platform");
         }
 
         return stockOptional.get();
@@ -34,7 +34,7 @@ public class StockService {
 
         if(stockOptional.isEmpty()){
             throw new ResourceNotFoundException(
-                    "Essa ação não esta disponível ou esta inativa nessa plataforma");
+                    "This stock is not available or is inactive on this platform");
         }
 
         return stockOptional.get();

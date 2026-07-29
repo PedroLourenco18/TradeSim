@@ -16,6 +16,6 @@ public class CustomUserDetailsService implements UserDetailsService {
     public UserDetails loadUserByUsername(String cpf) throws UsernameNotFoundException {
         return userRepository.findByCpfAndActiveIsTrue(cpf)
                 .map(u -> new CustomUserDetails(u.getId(), u.getPassword()))
-                .orElseThrow(() -> new UsernameNotFoundException("Usuário não encontrado"));
+                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
     }
 }

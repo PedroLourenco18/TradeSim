@@ -38,7 +38,7 @@ public class IdempotencyKeyInterceptor implements HandlerInterceptor {
         String key = request.getHeader(idempotencyKeyHeader);
 
         if(key == null || key.isEmpty()){
-            setResponse(response, 400, buildJsonResponseBody("O header '" + idempotencyKeyHeader + "' é obrigatório nesse endpoint"));
+            setResponse(response, 400, buildJsonResponseBody("The header '" + idempotencyKeyHeader + "' is mandatory for this endpoint"));
             return false;
         }
 
@@ -47,7 +47,7 @@ public class IdempotencyKeyInterceptor implements HandlerInterceptor {
         try{
             uuidKey = UUID.fromString(key);
         }catch (IllegalArgumentException e){
-            setResponse(response, 400, buildJsonResponseBody("A idempotency-key deve ser no formato UUID"));
+            setResponse(response, 400, buildJsonResponseBody("The idempotency-key must be in UUID format"));
             return false;
         }
 
@@ -73,7 +73,7 @@ public class IdempotencyKeyInterceptor implements HandlerInterceptor {
         IdempotencyKey idempotencyKey = optionalIdempotencyKey.get();
 
         if(idempotencyKey.getStatus().equals(RequestStatus.PROCESSING)){
-            setResponse(response, 409, buildJsonResponseBody("Essa requisição ja esta sendo processada"));
+            setResponse(response, 409, buildJsonResponseBody("This request is already being processed"));
             return false;
         }
 

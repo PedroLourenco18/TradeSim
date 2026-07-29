@@ -37,7 +37,6 @@ public class BrapiStockDataGateway implements StockDataGateway {
                     .decimalValue();
         }catch (NullPointerException | RestClientException e){
             throw new InternalErrorException("Houve um erro interno");
-            //TODO log
         }
     }
 }
