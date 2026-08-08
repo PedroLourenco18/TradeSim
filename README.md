@@ -217,4 +217,4 @@ Here are some visual highlights of the application:
 
 ## 📄 License
 
-This project is licensed under the MIT License - see the license file for details.
+This project is licensed under the MIT License - see the [LICENSE](LICENSE.md) file for details.
